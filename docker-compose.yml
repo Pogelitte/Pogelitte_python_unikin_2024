@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app-auto-backup:
+    container_name: app-auto-backup
+    user: root
+    image: python:3.11.4
+    volumes:
+      - ./app/:/app/
+    working_dir: /app
+    ports:
+      - 9091:8000
+    env_file:
+      - ./.env
+    entrypoint: ['./entrypoint.sh']
+
+    depends_on:
+      - db-auto-backup
+      - redis-auto-backup
+
+  db-auto-backup:
+    container_name: db-auto-backup
+    image: postgres:16
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+
+  redis-auto-backup:
+    container_name: redis-auto-backup
+    image: redis:7.2.4
